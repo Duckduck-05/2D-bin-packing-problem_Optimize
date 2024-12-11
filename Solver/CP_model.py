@@ -219,6 +219,13 @@ def main():
     """
     Main entry point of the script.
     Parses command-line arguments and runs the bin packing solver.
+
+    Example command line: 
+
+    python CP_model.py example.txt
+
+    Specify a custom input file and time limit
+    python CP_model.py example.txt 600
     """
     # Default parameters
     file_path = 'Solver/test.txt'
