@@ -31,9 +31,25 @@ struct Rect
     }
 };
 
-bool cmp_truck(const i4 &x, const i4 &y)
+bool cmp1_truck(const i4 &x, const i4 &y) // gia tri tang dan
 {
-    return (double)x.se.fi / (x.fi.fi * x.fi.se) < (double)y.se.fi / (y.fi.fi * y.fi.se);
+    LL a = 1LL * x.se.fi * (y.fi.fi * y.fi.se), b = 1LL * y.se.fi * (x.fi.fi * x.fi.se);
+    if(a != b) return a < b;
+    return x.se.se < y.se.se;
+}
+
+bool cmp2_truck(const i4 &x, const i4 &y) // dien tich giam dan
+{
+    if(x.fi.fi * x.fi.se != y.fi.fi * y.fi.se) return x.fi.fi * x.fi.se > y.fi.fi * y.fi.se;
+    if(x.se.fi != y.se.fi) return x.se.fi < y.se.fi;
+    return x.se.se < y.se.se;
+}
+
+bool cmp3_truck(const i4 &x, const i4 &y) // cost tang dan
+{
+    if(x.se.fi != y.se.fi) return x.se.fi < y.se.fi;
+    if(x.fi.fi * x.fi.se != y.fi.fi * y.fi.se) return x.fi.fi * x.fi.se > y.fi.fi * y.fi.se;
+    return x.se.se < y.se.se;
 }
 
 bool cmp_item(const i3 &x, const i3 &y)
@@ -214,23 +230,45 @@ void best_first_search(int pos)
 {
     if(real_item_cnt == 0) return;
     // init
-    sort(truck + pos, truck + k + 1, cmp_truck);
-    //cout << pos << "wtf\n"; // DEBUG
-    //for_x(i, pos, k) cout << truck[i].fi.fi << " " << truck[i].fi.se << " " << truck[i].se.fi << "?\n"; // DEBUG
-    int candidate_truck, cost;
+    int candidate_truck, cost, phase = 0;
     candidate_cost = inf;
     // tim candidate o vi tri dau tien (theo pos)
+    // phase 1
+    sort(truck + pos, truck + k + 1, cmp1_truck);
+    //cout << pos << "wtf\n"; // DEBUG
+    //for_x(i, pos, k) cout << truck[i].fi.fi << " " << truck[i].fi.se << " " << truck[i].se.fi << "?\n"; // DEBUG
     for_x(i, pos, k)
     {
         truck[pos - 1] = truck[i], danh_dau_truck = i;
         cost = process(pos);
-        if(cost < candidate_cost) candidate_cost = cost, candidate_truck = i;
+        if(cost < candidate_cost) candidate_cost = cost, candidate_truck = i, phase = 1;
         //cout << cost << "nihao\n"; // DEBUG
     }
+    // phase 2
+
+    sort(truck + pos, truck + k + 1, cmp2_truck);
+    for_x(i, pos, k)
+    {
+        truck[pos - 1] = truck[i], danh_dau_truck = i;
+        cost = process(pos);
+        if(cost < candidate_cost) candidate_cost = cost, candidate_truck = i, phase = 2;
+    }
+    // phase 3
+    sort(truck + pos, truck + k + 1, cmp3_truck);
+    for_x(i, pos, k)
+    {
+        truck[pos - 1] = truck[i], danh_dau_truck = i;
+        cost = process(pos);
+        if(cost < candidate_cost) candidate_cost = cost, candidate_truck = i, phase = 3;
+    }
     // xu li real
+    if(phase == 1) sort(truck + pos, truck + k + 1, cmp1_truck);
+    else if(phase == 2) sort(truck + pos, truck + k + 1, cmp2_truck);
+
     truck[pos - 1] = truck[candidate_truck];
     total_cost += try_to_fill(pos - 1, 1);
-    for(int i = candidate_truck; i > pos; i--) truck[i] = truck[i - 1];
+    swap(truck[pos], truck[candidate_truck]);
+    //for(int i = candidate_truck; i > pos; i--) truck[i] = truck[i - 1];
     //cout << total_cost << " " << candidate_cost << " " << real_item_cnt << "omg\n"; // DEBUG
 }
 
@@ -255,6 +293,7 @@ void solve()
     real_item_cnt = n;
     for_x(i, 1, n) real_item_queue[i] = i;
     // tim hoan vi
+    //sort(truck + 1, truck + k + 1, cmp1_truck);
     for_x(pos, 1, k) best_first_search(pos); // tim candidate cho pos
     //cout << total_cost; // DEBUG
     //cout << real_item_cnt << "\n"; // DEBUG
@@ -263,6 +302,7 @@ void solve()
 
 int main()
 {
+    // total time in hustack 253,310 ms
     ios::sync_with_stdio(0);
     cin.tie(0);
     cout.tie(0);
