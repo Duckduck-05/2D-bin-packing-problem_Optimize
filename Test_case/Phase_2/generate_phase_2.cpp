@@ -29,27 +29,21 @@ bool check_test()
     return false;
 }
 
-void make_test()
+void make_test(int x, int y)
 {
-    int big_money = rand() % 2;
-    n = randlr(400, 1000);
-    k = randlr(n, 1000);
-    for_x(i, 1, n / 3 * 2)
+    n = max(100, x * 100 + y * 10);
+    if(n > 300) n = randlr(100, 300);
+    k = randlr(n, 300);
+    for_x(i, 1, n)
     {
-        item_w[i] = randlr(100, 300);
-        item_l[i] = randlr(100, 300);
-    }
-    for_x(i, n / 3 * 2 + 1, n)
-    {
-        item_w[i] = randlr(10, 60);
-        item_l[i] = randlr(10, 60);
+        item_w[i] = randlr(50, 250)/10 * 10;
+        item_l[i] = randlr(50, 250)/10 * 10;
     }
     for_x(i, 1, k)
     {
-        truck_w[i] = randlr(50, 600);
-        truck_l[i] = randlr(50, 600);
-        if(big_money) truck_c[i] = randlr(80, 200);
-        else truck_c[i] = randlr(1, 50);
+        truck_w[i] = randlr(100, 400)/10 * 10;
+        truck_l[i] = randlr(100, 400)/10 * 10;
+        truck_c[i] = randlr(100, 500);
     }
     ofstream wfile;
     wfile.open("main.inp");
@@ -61,7 +55,7 @@ void make_test()
 
 void viet_test(int x, int y)
 {
-    string str_prefix = "D:\\window\\codeblock\\main\\Phase_3\\input"; // thay doi cai nay thanh folder chua test
+    string str_prefix = "D:\\window\\codeblock\\main\\Phase_2\\input"; // thay doi cai nay thanh folder chua test
     ofstream wfile;
     string path = str_prefix + to_string(x) + to_string(y) + ".txt";
     cout << path << "\n";
@@ -82,7 +76,7 @@ int main()
             bool ok = false;
             while(!ok)
             {
-                make_test();
+                make_test(i, j);
                 ok = check_test();
             }
             viet_test(i, j);
