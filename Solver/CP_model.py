@@ -1,4 +1,5 @@
 import sys
+import os
 from typing import List, Tuple, Dict
 from ortools.sat.python import cp_model
 
@@ -175,7 +176,7 @@ class BinPackingSolver:
             status = solver.Solve(model)
 
             # Print results
-            self._print_results(solver, status, X, R, r, t, Z)
+            self._print_results(solver, status, X, R, l, b, Z)
 
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}")
@@ -190,28 +191,35 @@ class BinPackingSolver:
             status (int): Solution status
             X, R, r, t, Z: Decision and coordinate variables
         """
-        print('----------------Given data----------------')
-        print(f'Number of packs: {self.n_packs}')
-        print(f'Number of bins : {self.n_bins}')
+        # print('----------------Given data----------------')
+        # print(f'Number of packs: {self.n_packs}')
+        # print(f'Number of bins : {self.n_bins}')
 
         if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-            print('--------------Solution Found--------------')
+            # print('--------------Solution Found--------------')
             
-            # Print pack placements
-            for i in range(self.n_packs):
-                rotation_status = 'Rotated' if solver.Value(R[i]) == 1 else 'Not rotated'
-                bin_placement = next(j for j in range(self.n_bins) if solver.Value(X[i, j]) == 1)
-                print(f'Pack {i+1}: {rotation_status}, Bin {bin_placement+1}, '
-                      f'Top-right coordinate: ({solver.Value(r[i])}, {solver.Value(t[i])})')
+            # # Print pack placements
+            # for i in range(self.n_packs):
+            #     rotation_status = 'Rotated' if solver.Value(R[i]) == 1 else 'Not rotated'
+            #     bin_placement = next(j for j in range(self.n_bins) if solver.Value(X[i, j]) == 1)
+            #     print(f'Pack {i+1}: {rotation_status}, Bin {bin_placement+1}, '
+            #           f'Top-right coordinate: ({solver.Value(r[i])}, {solver.Value(t[i])})')
 
-            print(f'Bins used       : {sum(solver.Value(Z[i]) for i in range(self.n_bins))}')
-            print(f'Total cost      : {solver.ObjectiveValue()}')
+            # print(f'Bins used       : {sum(solver.Value(Z[i]) for i in range(self.n_bins))}')
+            # print(f'Total cost      : {solver.ObjectiveValue()}')
             
-            print('----------------Statistics----------------')
-            print(f'Status          : {solver.StatusName(status)}')
-            print(f'Time limit      : {self.time_limit} seconds')
-            print(f'Running time    : {solver.UserTime()} seconds')
-            print(f'Explored branches: {solver.NumBranches()}')
+            # print('----------------Statistics----------------')
+            # print(f'Status          : {solver.StatusName(status)}')
+            # print(f'Time limit      : {self.time_limit} seconds')
+            # print(f'Running time    : {solver.UserTime()} seconds')
+            # print(f'Explored branches: {solver.NumBranches()}')
+
+            for i in range(self.n_packs):
+                for j in range(self.n_bins):
+                    if solver.Value(X[i, j]) == 1:
+                        bin_placement = j + 1
+                print(f"{i + 1} {bin_placement} {solver.Value(r[i])} {solver.Value(t[i])} {solver.Value(R[i])}")
+
         else:
             print('No solution found within the time limit.')
 
@@ -245,4 +253,15 @@ def main():
     solver.solve()
 
 if __name__ == "__main__":
+    # filename = 'temp_file.txt'
+    # N, K = map(int, input().split())
+    # with open(filename, 'w') as file:
+    #     file.write(f"{N} {K}" + '\n')
+    #     for _ in range(N+K):
+    #         line = input()
+    #         file.write(line + '\n')
+            
+    # main(filename)
+
+    # os.remove(filename)
     main()
