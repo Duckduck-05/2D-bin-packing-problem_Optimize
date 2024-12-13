@@ -214,7 +214,7 @@ class BinPackingSolver:
             return("F")
         
 if __name__ == "__main__":
-    numtest = [[16, 40], [0, 59], [0, 59]]
+    numtest = [[1, 40], [0, 59], [0, 59]]
     for phase in range(1, 4):
         for test in range(numtest[phase-1][0], numtest[phase-1][1]+1):
             input_path = f"Test_case/Phase_{phase}/input{test:02d}.txt"
