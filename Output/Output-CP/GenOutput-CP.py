@@ -1,7 +1,10 @@
+# Model
 import sys
 import os
+import time
 from typing import List, Tuple, Dict
 from ortools.sat.python import cp_model
+
 
 class BinPackingSolver:
     """
@@ -27,6 +30,7 @@ class BinPackingSolver:
         self.bins = []
         self.max_width = 0
         self.max_height = 0
+        self.minCost = 0
 
     def read_input(self) -> None:
         """
@@ -174,6 +178,9 @@ class BinPackingSolver:
             solver = cp_model.CpSolver()
             solver.parameters.max_time_in_seconds = self.time_limit
             status = solver.Solve(model)
+            
+            # minCost
+            self.minCost = solver.Value(cost)
 
             # Print results
             return self._print_results(solver, status, X, R, l, b, Z)
@@ -181,6 +188,7 @@ class BinPackingSolver:
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}")
             sys.exit(1)
+
 
     def _print_results(self, solver, status, X, R, r, t, Z):
         """
@@ -191,77 +199,63 @@ class BinPackingSolver:
             status (int): Solution status
             X, R, r, t, Z: Decision and coordinate variables
         """
-        # print('----------------Given data----------------')
-        # print(f'Number of packs: {self.n_packs}')
-        # print(f'Number of bins : {self.n_bins}')
 
         if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-            # print('--------------Solution Found--------------')
-            
-            # # Print pack placements
-            # for i in range(self.n_packs):
-            #     rotation_status = 'Rotated' if solver.Value(R[i]) == 1 else 'Not rotated'
-            #     bin_placement = next(j for j in range(self.n_bins) if solver.Value(X[i, j]) == 1)
-            #     print(f'Pack {i+1}: {rotation_status}, Bin {bin_placement+1}, '
-            #           f'Top-right coordinate: ({solver.Value(r[i])}, {solver.Value(t[i])})')
-
-            # print(f'Bins used       : {sum(solver.Value(Z[i]) for i in range(self.n_bins))}')
-            # print(f'Total cost      : {solver.ObjectiveValue()}')
-            
-            # print('----------------Statistics----------------')
-            # print(f'Status          : {solver.StatusName(status)}')
-            # print(f'Time limit      : {self.time_limit} seconds')
-            # print(f'Running time    : {solver.UserTime()} seconds')
-            # print(f'Explored branches: {solver.NumBranches()}')
-
+            res = ""
             for i in range(self.n_packs):
                 for j in range(self.n_bins):
                     if solver.Value(X[i, j]) == 1:
                         bin_placement = j + 1
-                return(f"{i + 1} {bin_placement} {solver.Value(r[i])} {solver.Value(t[i])} {solver.Value(R[i])}")
-
+                res += f"{i + 1} {bin_placement} {solver.Value(r[i])} {solver.Value(t[i])} {solver.Value(R[i])}"
+                if i != self.n_packs -1:
+                    res += '\n'
+            return res
         else:
             return("F")
-
-def main():
-    """
-    Main entry point of the script.
-    Parses command-line arguments and runs the bin packing solver.
-
-    Example command line: 
-
-    python CP_model.py example.txt
-
-    Specify a custom input file and time limit
-    python CP_model.py example.txt 600
-    """
-    # Default parameters
-    file_path = 'Solver/test.txt'
-    time_limit = 300
-
-    # Override with command-line arguments if provided
-    if len(sys.argv) > 1:
-        file_path = sys.argv[1]
-    if len(sys.argv) > 2:
-        try:
-            time_limit = int(sys.argv[2])
-        except ValueError:
-            print("Invalid time limit. Using default.")
-
-    # Create and solve the problem
-    solver = BinPackingSolver(file_path, time_limit)
-    solver.solve()
-
+        
 if __name__ == "__main__":
-    # filename = 'temp_file.txt'
-    # N, K = map(int, input().split())
-    # with open(filename, 'w') as file:
-    #     file.write(f"{N} {K}" + '\n')
-    #     for _ in range(N+K):
-    #         line = input()
-    #         file.write(line + '\n')
-            
-    # main(filename)
+    numtest = [[16, 40], [0, 59], [0, 59]]
+    for phase in range(1, 4):
+        for test in range(numtest[phase-1][0], numtest[phase-1][1]+1):
+            input_path = f"Test_case/Phase_{phase}/input{test:02d}.txt"
+            output_path = f"Output/Output-CP/Phase_{phase}/output{test:02d}.txt"
 
-    # os.remove(filename)
-    main()
+            with open(input_path, "r") as input_file:
+                start_time = time.time()
+
+                solver = BinPackingSolver(input_path, 300)
+                result = solver.solve()
+                end_time = time.time()
+                execution_time = end_time - start_time
+
+                summary = f"{solver.n_bins} {solver.n_packs} {solver.minCost} {execution_time}"
+            input_file.close()
+            
+            with open(output_path, "w") as output_file:
+                output_file.write(result)
+                if result != "F":
+                    output_file.write('\n')
+                    output_file.write(summary)
+            output_file.close()
+
+    # input_path = "Output/Ouput-CP/test_input.txt"
+    # output_path = "Output/Ouput-CP/test_output.txt"
+
+    # with open(input_path, "r") as input_file:
+    #     start_time = time.time()
+
+    #     solver = BinPackingSolver(input_path, 300)
+    #     result = solver.solve()
+    #     end_time = time.time()
+    #     execution_time = end_time - start_time
+
+    #     summary = f"{solver.n_bins} {solver.n_packs} {solver.minCost} {execution_time}"
+    # input_file.close()
+    
+    # # print(result)
+    # with open(output_path, "w") as output_file:
+    #     output_file.write(result)
+    #     if result != "F":
+    #         output_file.write('\n')
+    #         output_file.write(summary)
+    # output_file.close()
