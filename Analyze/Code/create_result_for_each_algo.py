@@ -19,7 +19,7 @@ for algo in algos:
                 lines = output_file.readlines()
             
             if lines != ["F"]:
-                trucks_used = [line.split()[1] for line in lines[:-1]]
+                trucks_used = {line.split()[1] for line in lines[:-1]}
                 n_trucks_used = len(trucks_used)
 
                 n_items, n_trucks, cost, running_time = lines[-1].split()
@@ -32,5 +32,3 @@ for algo in algos:
     with open(result_path, "w", newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(data)
-
-
