@@ -1,4 +1,5 @@
 import os
+import csv
 import time
 from ortools.linear_solver import pywraplp
 
@@ -26,9 +27,29 @@ def input_data(testcase_path):
     H_truck = [data['size_truck'][i][1] for i in range(k)]
     return n, k, data, W_truck, H_truck
 
+def input_data():
+    n, k = (int(x) for x in input().split())
+    data = {}
+    data['size_item'] = []  # 'size_item': [[w0, h0], [w1, h1], ...]
+    data['size_truck'] = [] # 'size_truck': [[W0, H0], [W1, H1], ...]
+    data['cost'] = []       # 'cost': [c0, c1, ...]
+    
+    for i in range(n):
+        w, h = (int(x) for x in input().split())
+        data['size_item'].append([w, h])
 
-def process_test_case(testcase_path):
-    n, k, data, W_truck, H_truck = input_data(testcase_path)
+    for j in range(k):
+        w, h, c = (int(x) for x in input().split())
+        data['size_truck'].append([w, h])
+        data['cost'].append(c)
+
+    W_truck = [data['size_truck'][i][0] for i in range(k)]
+    H_truck = [data['size_truck'][i][1] for i in range(k)]
+    return n, k, data, W_truck, H_truck
+
+    
+
+def process_test_case(n, k, data, W_truck, H_truck):
 
     max_W = max(W_truck)
     max_H = max(H_truck)
@@ -144,48 +165,28 @@ def process_test_case(testcase_path):
     else:
         return None, None, None, None, None, None
 
-def process_folder(testcase_folder):
-    
-    # Process each test case in the folder
-    for testcase_filename in os.listdir(testcase_folder):
-        testcase_path = os.path.join(testcase_folder, testcase_filename)
-        result, num_trucks_used, total_cost, running_time = process_test_case(testcase_path)
 
-        if result is not None:
-            print(f"Test case {testcase_filename}:")
-            for item_result in result:
-                print(' '.join(map(str, item_result)))
-            print(f'Number of trucks used: {num_trucks_used}')
-            print(f'Total cost: {total_cost}')
-            print(f'Running time: {running_time:.4f} seconds')
-        else:
-            print(f"Test case {testcase_filename}: No feasible solution found")
-            
-def inp_to_out(testcase_folder, output_folder):
-    
-    # Process each test case in the folder
-    for testcase_filename in os.listdir(testcase_folder):
-        testcase_path = os.path.join(testcase_folder, testcase_filename)
-        output_path = output_folder + "\\output" + testcase_filename[-6:]
-        result, n, k, num_trucks_used, total_cost, running_time = process_test_case(testcase_path)
-
-        with open(output_path, "w") as output_file:
-            if result is not None:
-                #print(f"Test case {testcase_filename}:")
-                for item_result in result:
-                    output_file.write(' '.join(map(str, item_result)) + "\n")
-                output_file.write(f"{n} {k} {num_trucks_used} {total_cost} {running_time}")
-            else:
-                output_file.write("F")
-            
-            
 if __name__ == "__main__":
-    #process_folder("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_1")
-    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_1", 
-               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_1")
-    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_2", 
-               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_2")
-    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_3", 
-               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_3")
     
+    n, k, data, W_truck, H_truck = input_data()
+    result, n, k, num_trucks_used, total_cost, running_time = process_test_case(n, k, data, W_truck, H_truck)
+
+    for res in result:
+        for i in res:
+            print(i, end=" ")
+        print()
     
+    # Process each test case in the folder
+    #for testcase_filename in os.listdir(testcase_folder):
+    #    testcase_path = os.path.join(testcase_folder, testcase_filename)
+    #    result, num_trucks_used, total_cost, running_time = process_test_case(testcase_path)
+#
+    #    if result is not None:
+    #        print(f"Test case {testcase_filename}:")
+    #         for item_result in result:
+    #            print(' '.join(map(str, item_result)))
+    #        print(f'Number of trucks used: {num_trucks_used}')
+    #        print(f'Total cost: {total_cost}')
+    #        print(f'Running time: {running_time:.4f} seconds')
+    #    else:
+    #        print(f"Test case {testcase_filename}: No feasible solution found")
