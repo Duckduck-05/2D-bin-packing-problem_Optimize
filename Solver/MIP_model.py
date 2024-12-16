@@ -116,7 +116,7 @@ def process_test_case(testcase_path):
     # objective
     cost = sum(used[m] * data['cost'][m] for m in range(k))
     solver.Minimize(cost)
-    time_limit = 300
+    time_limit = 0.5 * 200000
     solver.set_time_limit(int(time_limit))
 
     start_time = time.time()
@@ -128,9 +128,6 @@ def process_test_case(testcase_path):
         for i in range(n):
             item_result = [i + 1]
             for j in range(k):
-                #if end_time - start_time > 300:
-                #    print("F")
-                #    return None, None, None, None
                 if X[i, j].solution_value() == 1:
                     item_result.append(j + 1)
             item_result.append(int(l[i].solution_value()))  # left coordinate == x
@@ -143,16 +140,12 @@ def process_test_case(testcase_path):
         running_time = end_time - start_time
 
         # result is the output list (𝑖, 𝑡[𝑖], 𝑥[𝑖], 𝑦[𝑖], 𝑜[𝑖]) of the problem
-        return result, num_trucks_used, total_cost, running_time
+        return result, n, k, num_trucks_used, total_cost, running_time
     else:
-        return None, None, None, None
+        return None, None, None, None, None, None
 
-
-if __name__ == "__main__":
+def process_folder(testcase_folder):
     
-    # Directory containing test cases
-    testcase_folder = ""
-
     # Process each test case in the folder
     for testcase_filename in os.listdir(testcase_folder):
         testcase_path = os.path.join(testcase_folder, testcase_filename)
@@ -167,3 +160,32 @@ if __name__ == "__main__":
             print(f'Running time: {running_time:.4f} seconds')
         else:
             print(f"Test case {testcase_filename}: No feasible solution found")
+            
+def inp_to_out(testcase_folder, output_folder):
+    
+    # Process each test case in the folder
+    for testcase_filename in os.listdir(testcase_folder):
+        testcase_path = os.path.join(testcase_folder, testcase_filename)
+        output_path = output_folder + "\\output" + testcase_filename[-6:]
+        result, n, k, num_trucks_used, total_cost, running_time = process_test_case(testcase_path)
+
+        with open(output_path, "w") as output_file:
+            if result is not None:
+                #print(f"Test case {testcase_filename}:")
+                for item_result in result:
+                    output_file.write(' '.join(map(str, item_result)) + "\n")
+                output_file.write(f"{n} {k} {num_trucks_used} {total_cost} {running_time}")
+            else:
+                output_file.write("F")
+            
+            
+if __name__ == "__main__":
+    #process_folder("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_1")
+    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_1", 
+               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_1")
+    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_2", 
+               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_2")
+    inp_to_out("C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Test_case\\Phase_3", 
+               "C:\\Users\\Laptop Japan\\2D-bin-packing-problem_Optimize\\Output\\Output-MIP\\Phase_3")
+    
+    
