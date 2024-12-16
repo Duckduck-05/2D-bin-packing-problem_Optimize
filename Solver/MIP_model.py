@@ -116,7 +116,7 @@ def process_test_case(testcase_path):
     # objective
     cost = sum(used[m] * data['cost'][m] for m in range(k))
     solver.Minimize(cost)
-    time_limit = 0.5 * 200000
+    time_limit = 300
     solver.set_time_limit(int(time_limit))
 
     start_time = time.time()
