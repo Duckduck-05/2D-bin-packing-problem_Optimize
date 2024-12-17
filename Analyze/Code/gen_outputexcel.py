@@ -1,6 +1,6 @@
 import pandas as pd
 
-algos = ["BaB", "BFS", "CP", "Greedy"]
+algos = ["MIP", "BaB", "BFS", "CP", "Greedy"]
 col_names = ["n_items", "n_trucks", "n_trucks_used", "cost", "running_time"]
 numtest = [[1, 40], [0, 59], [0, 59]]
 

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-algos = ["BaB", "BFS", "CP", "Greedy"]
+algos = ["MIP", "BaB", "BFS", "CP", "Greedy"]
 
 n_packs = []
 cost = []
@@ -40,13 +40,14 @@ for algo in algos:
         run_time.append(_run_time)
 
 # compare all and add subplot
-colors = ["#d62728ff", "#ff7f0eff", "#2ca02cff", "#1f77b4ff"]
+colors = ["#9467bdff", "#d62728ff", "#ff7f0eff", "#2ca02cff", "#1f77b4ff"]
 
 fig, ax = plt.subplots(figsize=(15, 9))
 axins = ax.inset_axes([0.05, 0.4, 0.35, 0.35])
-for i in range(4):
+for i in range(5):
     ax.plot(n_packs[i], cost[i], "-", label = algos[i], color = colors[i])
     axins.plot(n_packs[i][:64], cost[i][:64], "-", color = colors[i])
+
 
 x1, x2, y1, y2 = 10, 50, 350, 4350
 axins.set_xlim(x1, x2)
@@ -72,7 +73,7 @@ plt.savefig('analyze/compare_all.png')
 
 # compare run time of fisrt 25 input
 fig, ax = plt.subplots(figsize=(10,5))
-for i in range(4):
+for i in range(5):
     ax.plot(n_packs[i], run_time[i], "-", label = algos[i], color = colors[i])
 
 ax.set_ylabel('Run time (s)')
@@ -80,3 +81,4 @@ ax.set_xlabel('Number of items')
 plt.title('Run time (lower is better)')
 plt.legend()
 plt.savefig('analyze/compare_all_run_time.png')
+# plt.show()
