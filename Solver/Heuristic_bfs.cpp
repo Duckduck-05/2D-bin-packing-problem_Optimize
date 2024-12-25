@@ -1,3 +1,5 @@
+// Heuristic Best First Search - Group 9
+
 #include <bits/stdc++.h>
 #define inf            1000000007
 #define maxn           1005
