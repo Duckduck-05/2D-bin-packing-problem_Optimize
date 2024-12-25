@@ -1,6 +1,7 @@
 import csv
+import pandas as pd
 
-algos = ["MIP", "BaB", "BFS", "CP", "Greedy"]
+algos = ["MIP", "CP", "BaB", "BFS", "Greedy"]
 
 col_names = ["n_items", "n_trucks", "n_trucks_used", "cost", "running_time"]
 numtest = [[1, 40], [0, 59], [0, 59]]
@@ -29,6 +30,11 @@ for algo in algos:
                     n_items, n_trucks =  input_file.readline().split()
                 n_trucks_used, cost, running_time = 'N/A', 'N/A', 'N/A'
             data.append([n_items, n_trucks, n_trucks_used, cost, running_time])
+
+    print("________________________________")
+    print(algo)
+    df = pd.DataFrame(data)
+    print(df.to_latex(index=False))
 
     with open(result_path, "w", newline='') as csvfile:
         writer = csv.writer(csvfile)

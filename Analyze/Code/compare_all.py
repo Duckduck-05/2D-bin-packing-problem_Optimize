@@ -45,8 +45,12 @@ colors = ["#9467bdff", "#d62728ff", "#ff7f0eff", "#2ca02cff", "#1f77b4ff"]
 fig, ax = plt.subplots(figsize=(15, 9))
 axins = ax.inset_axes([0.05, 0.4, 0.35, 0.35])
 for i in range(5):
-    ax.plot(n_packs[i], cost[i], "-", label = algos[i], color = colors[i])
-    axins.plot(n_packs[i][:64], cost[i][:64], "-", color = colors[i])
+    if algos[i] == "BaB":
+        ax.plot(n_packs[i], cost[i], "-", label = "BaB-based", color = colors[i])
+        axins.plot(n_packs[i][:64], cost[i][:64], "-", color = colors[i])
+    else:
+        ax.plot(n_packs[i], cost[i], "-", label = algos[i], color = colors[i])
+        axins.plot(n_packs[i][:64], cost[i][:64], "-", color = colors[i])
 
 
 x1, x2, y1, y2 = 10, 50, 350, 4350
@@ -74,7 +78,10 @@ plt.savefig('analyze/compare_all.png')
 # compare run time of fisrt 25 input
 fig, ax = plt.subplots(figsize=(10,5))
 for i in range(5):
-    ax.plot(n_packs[i], run_time[i], "-", label = algos[i], color = colors[i])
+    if algos[i] == "BaB":
+        ax.plot(n_packs[i], run_time[i], "-", label = "BaB-based", color = colors[i])
+    else:
+        ax.plot(n_packs[i], run_time[i], "-", label = algos[i], color = colors[i])
 
 ax.set_ylabel('Run time (s)')
 ax.set_xlabel('Number of items')
